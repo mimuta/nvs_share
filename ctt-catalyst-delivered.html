@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CTT Catalyst — Delivered</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ef; --paper2:#eceae4;
+    --ink:#16242e; --ink2:#2c3e49;
+    --muted:#5d6f7b; --muted-d:#93a7b3;
+    --line:#dcd9d1;
+    --coral:#ff4127; --coral-2:#ff6a52; --coral-soft:#ffe9e4;
+    --green:#12a077; --green-soft:#e2f2ec;
+    --amber:#e0a219; --amber-soft:#faf0d6;
+    --red:#c0392b;
+    --nv:#0460A9; --blue-soft:#e3eefb;
+    --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:'DM Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--sans); background:#e6e4de; color:var(--ink);
+    overflow:hidden; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  img{max-width:100%}
+  [hidden]{display:none!important}
+
+  /* ---------- deck / slide framework ---------- */
+  #deck{position:fixed;inset:0}
+  .slide{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(26px,3.8vw,60px) clamp(34px,6vw,104px);
+    background:var(--paper); color:var(--ink);
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .5s ease;
+    overflow:hidden;
+  }
+  .slide.active{opacity:1;visibility:visible;pointer-events:auto}
+  .stage{width:100%;max-width:1360px;margin:0 auto}
+
+  /* ---------- type ---------- */
+  .eyebrow{
+    font-size:clamp(13px,1.26vw,17px);font-weight:700;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--coral);display:flex;align-items:center;gap:16px;margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:40px;height:3px;border-radius:2px;background:var(--coral);flex:none}
+  .h1{font-size:clamp(36px,5.5vw,72px);font-weight:700;line-height:1.03;letter-spacing:-.02em;color:var(--ink)}
+  .h2{font-size:clamp(30px,4.2vw,54px);font-weight:700;line-height:1.06;letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
+  .lead{font-size:clamp(18px,1.86vw,25px);line-height:1.5;color:var(--ink2);max-width:62ch;margin-top:20px;font-weight:400}
+  .lead b,.lead strong{font-weight:700;color:var(--ink)}
+  .sub{font-size:clamp(15px,1.5vw,19px);color:var(--muted);line-height:1.5}
+  .hi{color:var(--coral)}
+  em{font-style:normal;color:var(--coral);font-weight:600}
+
+  /* ---------- layout helpers ---------- */
+  .grid{display:grid;gap:clamp(13px,1.4vw,22px)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g5{grid-template-columns:repeat(5,1fr)}
+  .mt{margin-top:clamp(16px,2.1vw,30px)}
+  .mt-s{margin-top:15px}
+  .row{display:flex;gap:clamp(16px,2vw,32px)}
+  .col{flex:1;min-width:0}
+
+  /* ---------- cards ---------- */
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:15px;
+    padding:clamp(17px,1.6vw,26px);box-shadow:0 1px 2px rgba(20,33,46,.04);
+  }
+  .card .k{font-size:clamp(13px,1.2vw,16px);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);margin-bottom:10px}
+  .card h3{font-size:clamp(18px,1.8vw,24px);font-weight:700;line-height:1.15;color:var(--ink);margin-bottom:8px}
+  .card p{font-size:clamp(15px,1.4vw,18px);line-height:1.46;color:var(--muted)}
+  .card.accent{border-top:3px solid var(--coral)}
+  .card.green{border-color:var(--green);background:var(--green-soft)}
+  .card.green .k{color:var(--green)}
+  .card.amber{border-color:var(--amber);background:var(--amber-soft)}
+  .card.amber .k{color:#a9791a}
+
+  /* ---------- stats ---------- */
+  .stat .n{font-size:clamp(31px,4.1vw,53px);font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ink)}
+  .stat .n .u{font-size:.44em;color:var(--coral);font-weight:700;margin-left:2px}
+  .stat .l{font-size:clamp(14px,1.26vw,17px);color:var(--muted);margin-top:9px;line-height:1.35;font-weight:500}
+
+  /* ---------- lists ---------- */
+  ul.ticks{list-style:none;display:flex;flex-direction:column;gap:13px}
+  ul.ticks li{position:relative;padding-left:30px;font-size:clamp(16px,1.54vw,20px);line-height:1.4;color:var(--ink2)}
+  ul.ticks li::before{content:"";position:absolute;left:0;top:.42em;width:10px;height:10px;border-radius:2px;background:var(--coral)}
+  ul.ticks li b{color:var(--ink);font-weight:700}
+
+  /* ---------- pills / badges ---------- */
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:clamp(13px,1.2vw,16px);font-weight:600;padding:6px 14px;border-radius:999px;white-space:nowrap}
+  .pill.done,.pill.ga{background:var(--green-soft);color:#0c7a5a}
+  .pill.p2{background:var(--amber-soft);color:#98700f}
+  .pill.pupr{background:var(--blue-soft);color:#0460A9}
+  .pill.prpr{background:var(--amber-soft);color:#98700f}
+  .pill.beta{background:#efe7fb;color:#6b3fb0}
+  .pill.dot::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+
+  /* ---------- table ---------- */
+  table.tbl{width:100%;border-collapse:collapse;font-size:clamp(14px,1.4vw,18px)}
+  table.tbl th{text-align:left;font-size:clamp(12px,1.1vw,14.5px);font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:0 16px 13px;border-bottom:2px solid var(--ink)}
+  table.tbl td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:middle;line-height:1.35}
+  table.tbl tr:last-child td{border-bottom:none}
+  table.tbl td b{color:var(--ink);font-weight:700}
+  code,.mono{font-family:var(--mono);font-size:.86em;background:rgba(20,33,46,.06);padding:1px 6px;border-radius:5px;color:var(--ink2)}
+
+  /* ---------- footer / chrome ---------- */
+  .foot{position:absolute;left:clamp(34px,6vw,104px);right:clamp(34px,6vw,104px);bottom:clamp(16px,2vw,28px);
+    display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);letter-spacing:.02em}
+  .foot .brand{display:flex;align-items:center;gap:10px;font-weight:600}
+  .dbx{display:inline-flex;align-items:flex-end;gap:2px;height:18px}
+  .dbx i{display:block;width:5px;border-radius:1px;background:var(--coral)}
+  .dbx i:nth-child(1){height:10px}.dbx i:nth-child(2){height:17px}.dbx i:nth-child(3){height:13px}
+
+  /* progress + counter + nav */
+  #bar{position:fixed;top:0;left:0;height:3px;background:var(--coral);z-index:40;transition:width .5s ease}
+  #counter{position:fixed;right:16px;top:14px;z-index:40;font-size:13px;font-family:var(--mono);color:#5d6f7b;background:rgba(255,255,255,.72);border:1px solid var(--line);padding:4px 11px;border-radius:999px;backdrop-filter:blur(6px)}
+  .nav{position:fixed;bottom:14px;right:16px;z-index:40;display:flex;gap:8px}
+  .nav button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.82);color:var(--ink2);font-size:18px;cursor:pointer;backdrop-filter:blur(6px);transition:.15s;display:flex;align-items:center;justify-content:center}
+  .nav button:hover{background:var(--coral);border-color:var(--coral);color:#fff}
+  .hint{position:fixed;bottom:16px;left:16px;z-index:40;font-size:12px;color:#93a7b3}
+
+  /* ---------- title slide motif ---------- */
+  .titlewrap{display:flex;flex-direction:column;justify-content:center;height:100%}
+  .brandline{display:flex;align-items:center;gap:12px;font-weight:700;font-size:23px;color:var(--ink);letter-spacing:.01em;margin-bottom:auto;padding-top:6px}
+  .brandline .cobrand-x{color:var(--muted-d);font-weight:400;font-size:26px;margin:0 4px}
+  .brandline img{height:32px;width:auto;display:block}
+  .nv-mark{height:26px;width:auto;display:block}
+  .nv-inline{height:19px;width:auto;vertical-align:-3px}
+  .foot-logo{height:15px;width:auto;vertical-align:-2px;margin-right:2px}
+
+  /* ---------- horizontal bar viz ---------- */
+  .barviz{display:flex;flex-direction:column;gap:clamp(11px,1.4vw,17px)}
+  .barrow{display:grid;grid-template-columns:minmax(150px,200px) 1fr auto;align-items:center;gap:clamp(10px,1.3vw,18px)}
+  .barrow .bl{font-weight:700;color:var(--ink);font-size:clamp(15px,1.4vw,17px);line-height:1.15}
+  .barrow .bl span{display:block;font-size:clamp(12px,1.1vw,13px);color:var(--muted);font-weight:500;margin-top:2px}
+  .bar{height:clamp(16px,1.7vw,22px);background:none;border:none;display:flex;align-items:center}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--coral-2),var(--coral));border-radius:5px;min-width:4px}
+  .barrow .bn{font-family:var(--mono);font-weight:500;color:var(--ink);font-size:clamp(14px,1.3vw,17px);min-width:72px;text-align:right}
+  .motif{position:absolute;right:clamp(-40px,-1vw,0px);top:50%;transform:translateY(-50%);width:min(42vw,560px);opacity:.85;pointer-events:none}
+  .titlefoot{margin-top:auto;padding-top:30px;display:flex;justify-content:space-between;color:var(--muted);font-size:16px;border-top:1px solid var(--line);gap:20px;flex-wrap:wrap}
+
+  /* channel / flow chips */
+  .flow{display:flex;align-items:stretch;gap:12px;flex-wrap:wrap}
+  .flow .step{flex:1;min-width:175px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px 18px}
+  .flow .step .k{font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--coral);margin-bottom:7px}
+  .flow .step h4{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:5px}
+  .flow .step p{font-size:15px;color:var(--muted);line-height:1.4}
+  .flow .arr{align-self:center;color:var(--coral);font-size:24px;flex:none}
+
+  .layer{display:flex;align-items:center;gap:18px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 20px;margin-bottom:11px}
+  .layer .lbl{flex:none;width:145px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coral)}
+  .layer .items{display:flex;gap:11px;flex-wrap:wrap;flex:1}
+  .layer .items span{font-size:16px;color:var(--ink2);background:var(--paper2);border:1px solid var(--line);border-radius:9px;padding:7px 13px;font-weight:500}
+  .layer .items span b{color:var(--ink);font-weight:700}
+
+  /* report mock (novartis) */
+  .report{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 8px 30px rgba(20,33,46,.14)}
+  .report .rhead{background:var(--nv);color:#fff;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .report .rhead .t{font-size:17px;font-weight:700;letter-spacing:.02em}
+  .report .rhead .s{font-size:13px;opacity:.85;margin-top:4px}
+  .report .rbody{padding:18px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:12px 13px;border-left:5px solid var(--green);background:#fbfbf9}
+  .kpi.amberk{border-left-color:var(--amber)}
+  .kpi.redk{border-left-color:var(--red)}
+  .kpi .kn{font-size:23px;font-weight:700;color:var(--ink);line-height:1}
+  .kpi .kl{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.25;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  .kpi .kt{font-size:13px;color:var(--green);margin-top:5px;font-weight:600}
+  .kpi.amberk .kt{color:#a9791a}.kpi.redk .kt{color:var(--red)}
+
+  .callout{border-left:5px solid var(--coral);background:var(--coral-soft);border-radius:0 12px 12px 0;padding:16px 20px}
+  .callout.gr{border-color:var(--green);background:var(--green-soft)}
+
+  /* ---------- screenshot frame ---------- */
+  .shot{border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 10px 34px rgba(20,33,46,.16);background:#fff}
+  .shot img{display:block;width:100%;height:auto}
+  .shot-ph{min-height:320px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;color:var(--muted);background:var(--paper2);text-align:center;padding:34px;font-size:15px}
+  .shot-ph b{color:var(--ink2)} .shot-ph code{font-size:14px}
+  .shot figcaption{font-size:13px;color:var(--muted);padding:11px 16px;border-top:1px solid var(--line);background:#fbfbf9;display:flex;align-items:center;gap:8px}
+  .shot figcaption .nv-inline{filter:none}
+  .callout .t{font-weight:700;color:var(--ink);font-size:18px;margin-bottom:6px}
+  .callout p{font-size:16px;color:var(--ink2);line-height:1.45}
+  .callout.sm p{font-size:14px;line-height:1.4;color:var(--muted)}
+
+  /* ---------- icon chips ---------- */
+  .ico{width:40px;height:40px;border-radius:11px;background:var(--coral-soft);display:flex;align-items:center;justify-content:center;margin-bottom:13px}
+  .ico svg{width:22px;height:22px;stroke:var(--coral);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .ico.gr{background:var(--green-soft)} .ico.gr svg{stroke:var(--green)}
+  .ico.nv{background:var(--blue-soft)} .ico.nv svg{stroke:var(--nv)}
+
+  /* ---------- phase timeline ---------- */
+  .phases{display:flex;gap:clamp(14px,1.6vw,24px);align-items:stretch}
+  .phase{flex:1;background:#fff;border:1px solid var(--line);border-radius:15px;padding:clamp(18px,1.8vw,26px);border-top:4px solid var(--muted-d)}
+  .phase.p1{border-top-color:var(--green)} .phase.p2{border-top-color:var(--nv)} .phase.p3{border-top-color:var(--muted-d)}
+  .phase .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;gap:10px}
+  .phase .pn{font-family:var(--mono);font-size:13.5px;font-weight:500;color:var(--muted);letter-spacing:.02em}
+  .phase h3{font-size:clamp(19px,1.9vw,25px);font-weight:700;color:var(--ink);margin-bottom:13px;line-height:1.12}
+  .pill.future{background:var(--paper2);color:var(--muted)}
+
+  @media (max-width:900px){
+    .g4,.g5,.g3{grid-template-columns:repeat(2,1fr)}
+    .row{flex-direction:column}
+    .report .rbody{grid-template-columns:repeat(2,1fr)}
+    .motif{opacity:.2}
+    .layer{flex-direction:column;align-items:flex-start;gap:8px}
+    .layer .lbl{width:auto}
+  }
+
+  /* ---------- print to PDF (fixed 16:9 page, one slide per page) ---------- */
+  @media print{
+    @page{size:1600px 1000px;margin:0}
+    html,body{overflow:visible;height:auto;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    #bar,#counter,.nav,.hint{display:none!important}
+    #deck{position:static}
+    .slide{position:relative!important;opacity:1!important;visibility:visible!important;
+      break-after:page;page-break-after:always;break-inside:avoid;
+      width:1600px;height:1000px;inset:auto;overflow:hidden}
+    .slide:last-child{break-after:auto;page-break-after:avoid}
+  }
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+<div id="counter">01</div>
+<div class="hint">← → to navigate · F fullscreen · P print to PDF</div>
+<div class="nav"><button id="prev" aria-label="Previous">‹</button><button id="next" aria-label="Next">›</button></div>
+
+<div id="deck">
+
+  <!-- 1 · TITLE ------------------------------------------------------------->
+  <section class="slide active">
+    <svg class="motif" viewBox="0 0 300 340" fill="none" aria-hidden="true">
+      <g stroke="#d9d5cc" stroke-width="1">
+        <path d="M150 20 L280 95 L280 245 L150 320 L20 245 L20 95 Z"/>
+        <path d="M150 20 L150 170 M150 170 L280 245 M150 170 L20 245"/>
+        <path d="M85 57 L215 132 M215 57 L85 132 M20 170 L280 170"/>
+        <path d="M85 207 L215 282 M215 207 L85 282"/>
+      </g>
+      <g fill="#ff4127">
+        <circle cx="150" cy="20" r="5"/><circle cx="280" cy="95" r="5"/><circle cx="20" cy="245" r="5"/>
+        <circle cx="150" cy="170" r="6"/><circle cx="215" cy="132" r="4"/><circle cx="85" cy="207" r="4"/>
+      </g>
+      <g fill="#12a077"><circle cx="20" cy="95" r="5"/><circle cx="280" cy="245" r="5"/><circle cx="150" cy="320" r="5"/></g>
+    </svg>
+    <div class="titlewrap stage">
+      <div class="brandline">
+        <img src="assets/databricks-logo.png" alt="Databricks">
+        <span class="cobrand-x">×</span>
+        <img src="assets/novartis-logo.png" alt="Novartis">
+      </div>
+      <div>
+        <div class="eyebrow">CTT Catalyst · Phase 1 POC delivered 100%</div>
+        <h1 class="h1">A working trial-intelligence<br>solution on Databricks</h1>
+        <p class="lead">We took the agreed proof of concept through to a working solution. The clinical-operations data, already in one place, now answers plain-language questions, feeds live dashboards, and produces full written trial reports. A small team built it in a few weeks, because everything runs on one platform.</p>
+      </div>
+      <div class="titlefoot">
+        <span>Prepared for Novartis CTT · Clinical Operations · NextGen sandbox</span>
+        <span>17 September 2026 · delivery review</span>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>01</span></div>
+  </section>
+
+  <!-- 2 · PROBLEM STATEMENT ------------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Why we built CTT Catalyst</div>
+      <h2 class="h2">Turning trial data into answers still takes a lot of manual work</h2>
+      <p class="lead">The clinical-operations data is already unified on NextGen. But turning it into an answer for a study leader still means pulling numbers together by hand, which is slow, easy to get inconsistent, and hard to rely on when a decision is due.</p>
+      <div class="grid g4 mt">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="7" r="2.5"/><circle cx="8" cy="18" r="2.5"/><circle cx="18" cy="17" r="2.5"/></svg></div>
+          <h3>Scattered signals</h3><p>Enrollment, screen-failure, milestones and site risk sit in different places — no single trial-level view.</p></div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <h3>Manual &amp; slow</h3><p>Every status read is re-assembled by hand in spreadsheets — days of effort, repeated per study.</p></div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 18V9M10 18V5M16 18v-6M4 18h16"/></svg></div>
+          <h3>Numbers disagree</h3><p>Different people, different definitions — the same metric doesn't always agree.</p></div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg></div>
+          <h3>No narrative or actions</h3><p>Raw data, but no on-demand report that ranks risk and recommends next actions.</p></div>
+      </div>
+      <div class="callout mt">
+        <div class="t">The opportunity</div>
+        <p>Turn the already-unified data into <b>instant answers, live dashboards and written trial reports</b> — one trusted source, on demand, scaling from one study to the whole portfolio.</p>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>02</span></div>
+  </section>
+
+  <!-- 3 · PHASED APPROACH --------------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Phased approach</div>
+      <h2 class="h2">Start with a proof of concept, then build out</h2>
+      <p class="lead">We planned this in stages: prove the idea on real data first, then build toward a production MVP and, later, the wider portfolio. Each stage adds to the one before it, all on the same governed platform.</p>
+      <div class="phases mt">
+        <div class="phase p1">
+          <div class="ph"><span class="pn">Phase 1 · POC</span><span class="pill done dot">Delivered 100%</span></div>
+          <h3>Prove it on real data</h3>
+          <ul class="ticks" style="gap:9px">
+            <li>Ask in plain language · 2 live dashboards · written trial reports</li>
+            <li>5 KPI views + clinical knowledge on one governed source</li>
+            <li>Quality measured automatically · gaps found &amp; flagged</li>
+          </ul>
+        </div>
+        <div class="phase p2">
+          <div class="ph"><span class="pn">Phase 2 · MVP</span><span class="pill pupr dot">Next</span></div>
+          <h3>Build toward production</h3>
+          <ul class="ticks" style="gap:9px">
+            <li>Chat web app + long-term memory (Apps · Lakebase)</li>
+            <li>Close data gaps: daily curves, country-level milestones</li>
+            <li>Persona, closure &amp; alerting logic · push quality to 100%</li>
+          </ul>
+        </div>
+        <div class="phase p3">
+          <div class="ph"><span class="pn">Phase 3 · Scale</span><span class="pill future dot">Future</span></div>
+          <h3>Extend to the portfolio</h3>
+          <ul class="ticks" style="gap:9px">
+            <li>From 5 studies to the whole trial portfolio</li>
+            <li>Bring documents &amp; protocols into scope</li>
+            <li>Operationalise into the CTT workflow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>03</span></div>
+  </section>
+
+  <!-- 4 · MANAGEMENT SUMMARY ------------------------------------------------>
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Management summary</div>
+      <h2 class="h2">Phase 1 of the POC is delivered</h2>
+      <p class="lead">The agreed Phase-1 scope is <b>100% delivered</b>. The clinical-operations data can now be used <b>three ways</b>: ask a question in plain language, open a live dashboard, or generate a full written trial report. All three read from one governed source, and quality is checked automatically.</p>
+      <div class="grid g4 mt">
+        <div class="card stat green"><div class="n">100<span class="u">%</span></div><div class="l"><b>Phase 1 POC scope delivered</b> · 100% addressable · <b>0</b> items blocked by data</div></div>
+        <div class="card stat"><div class="n">1<span class="u">platform</span></div><div class="l">Everything on one platform — <b>no data moved</b>, no tools glued together, one small team</div></div>
+        <div class="card stat"><div class="n">3<span class="u">ways</span></div><div class="l">Ask in plain language · 2 live dashboards (17 widgets) · written trial reports</div></div>
+        <div class="card stat"><div class="n">→100<span class="u">%</span></div><div class="l"><b>Quality target</b> · 30/34 automated checks pass today · complex-query holds by design</div></div>
+      </div>
+      <div class="grid g3 mt-s">
+        <div class="card green"><div class="ico gr"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div class="k">The win</div><p>A study leader can now <b>ask the trial a question</b>, open a live dashboard, or generate a full written report with a risk list and recommended actions — all from one trusted source.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></div><div class="k">Why it was fast</div><p>One platform meant <b>no integration project</b>: data, answers, dashboards, reports and quality checks all live together — so a small team delivered in weeks.</p></div>
+        <div class="card"><div class="ico nv"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="k">Where it goes next</div><p><b>Phase 2 is additive on the same platform</b> — chat web app, long-term memory and closing the source-data gaps. Switched on in days, not a new project.</p></div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>02</span></div>
+  </section>
+
+  <!-- 3 · DELIVERED VALUE --------------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Delivered value</div>
+      <h2 class="h2">What a study leader can do now</h2>
+      <p class="lead">The data was already in one place, but people still pulled it together by hand. That work is now done for them, three ways, from the same trusted source.</p>
+      <div class="grid g3 mt">
+        <div class="card accent"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg></div><div class="k">Ask</div><h3>Talk to the trial</h3><p>Ask in plain language — enrollment, screening, milestones, risk — and ask follow-ups the same way. Answers come straight from the trusted data. No dashboards to hunt through.</p></div>
+        <div class="card accent"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div><div class="k">See</div><h3>Live dashboards</h3><p>Two live dashboards — Enrollment Overview and Milestone &amp; Risk Tracking — refresh automatically, shareable by link, with e-mail subscriptions.</p></div>
+        <div class="card accent"><div class="ico"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg></div><div class="k">Decide</div><h3>Written trial reports</h3><p>One click produces a Novartis-branded report per study: KPI scorecard, country-by-country breakdown, ranked risks and <b>recommended next actions</b>.</p></div>
+      </div>
+      <div class="callout gr mt">
+        <div class="t">Business value</div>
+        <p>Cut the manual effort of gathering data across systems, interpreting it, and preparing trial-level insight and actions — replaced by an on-demand, repeatable workflow that always ties back to the source and scales from one study to the whole portfolio.</p>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>03</span></div>
+  </section>
+
+  <!-- 4 · SINGLE PLATFORM --------------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Why it came together fast</div>
+      <h2 class="h2">Everything runs on one platform</h2>
+      <p class="lead">Nothing had to be moved, no extra tools were needed, and there was no glue code between vendors. Security, business definitions, plain-language answers, dashboards and quality checks all sit on the <b>same platform</b>, which is why a small team could deliver a full solution in weeks rather than months.</p>
+      <div class="grid g3 mt">
+        <div class="card"><div class="k">Secure once</div><h3>One security model</h3><p>A single set of access rules across every table, dashboard and report — nothing to re-secure per tool. 22 source tables verified, none outstanding.</p></div>
+        <div class="card"><div class="k">Define once</div><h3>One set of KPIs</h3><p>Enrollment, screening, milestones and risk are each defined once — the same numbers feed the questions, the dashboards and the reports.</p></div>
+        <div class="card"><div class="k">Use everywhere</div><h3>Three ways, one source</h3><p>Questions, dashboards and reports all read the same definitions — so the numbers always agree, with no rework.</p></div>
+      </div>
+      <div class="grid g2 mt-s">
+        <div class="card"><div class="k">Trust built in</div><h3>Answers you can check</h3><p>Every answer traces back to the trusted source, and automated checks re-test quality on every change — this comes with the platform, not as extra work.</p></div>
+        <div class="card green"><div class="k">The single-platform payoff</div><h3>Same platform, more headroom</h3><p>Reading documents, a chat web app and long-term memory are <b>add-ons on the same platform</b> — switched on in days, not a new project.</p></div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>04</span></div>
+  </section>
+
+  <!-- 5 · ARCHITECTURE ------------------------------------------------------>
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">How it works · one platform</div>
+      <h2 class="h2">One source of data, three ways to use it</h2>
+      <div class="flow mt">
+        <div class="step"><div class="k">Source</div><h4>The data</h4><p>The clinical-operations data, read-only — study, country, site, event &amp; scenario tables.</p></div>
+        <div class="arr">→</div>
+        <div class="step"><div class="k">Define</div><h4>Trusted KPIs</h4><p>5 curated views + clinical knowledge, so questions map to the right numbers.</p></div>
+        <div class="arr">→</div>
+        <div class="step"><div class="k">Serve</div><h4>3 ways to use it</h4><p>Ask in plain language · live dashboards · written trial reports.</p></div>
+        <div class="arr">→</div>
+        <div class="step"><div class="k">Trust</div><h4>Checked &amp; traceable</h4><p>Full traceability + automated quality checks on every answer.</p></div>
+      </div>
+      <div class="mt">
+        <div class="layer"><div class="lbl">The data</div><div class="items"><span><b>Clinical-operations data</b> · read-only</span><span>Study / country / site / event tables</span><span><b>Milestone dependency map</b> · 122 milestones</span></div></div>
+        <div class="layer"><div class="lbl">Definitions &amp; knowledge</div><div class="items"><span><b>5 KPI views</b> · 459,564 rows</span><span>31 clinical abbreviations</span><span>5 knowledge documents</span><span>Worked examples &amp; guardrails</span></div></div>
+        <div class="layer"><div class="lbl">Ways to use it</div><div class="items"><span><b>Ask in plain language</b> · with follow-ups</span><span><b>Dashboards</b> · 2 live, 17 widgets</span><span><b>Written reports</b> · 8+7 sections + risk engine</span></div></div>
+        <div class="layer"><div class="lbl">Trust</div><div class="items"><span>One security model &amp; full traceability</span><span><b>34 automated checks</b> · 30 passing</span><span>Answers always tie back to source</span></div></div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered · nextgen_eu_development_sandbox.clinops_research</span><span>05</span></div>
+  </section>
+
+  <!-- 6 · CAPABILITIES & MATURITY --------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Databricks capabilities &amp; maturity</div>
+      <h2 class="h2">Built on generally-available capabilities</h2>
+      <p class="lead">Every capability used in this delivery is <b>generally available</b> and production-grade. Even the Phase-2 building blocks are already on the platform, most of them GA too.</p>
+      <div class="row mt">
+        <div class="col" style="flex:1.5">
+          <table class="tbl">
+            <thead><tr><th>Capability used</th><th>In this delivery</th><th>State</th></tr></thead>
+            <tbody>
+              <tr><td><b>Unity Catalog</b></td><td>Governance, lineage, security</td><td><span class="pill ga dot">GA</span></td></tr>
+              <tr><td><b>AI/BI Genie</b></td><td>Ask in plain language</td><td><span class="pill ga dot">GA</span></td></tr>
+              <tr><td><b>AI/BI Dashboards</b></td><td>2 live dashboards</td><td><span class="pill ga dot">GA</span></td></tr>
+              <tr><td><b>Serverless SQL &amp; compute</b></td><td>KPI views + report generator</td><td><span class="pill ga dot">GA</span></td></tr>
+              <tr><td><b>Unity Catalog metric views</b></td><td>The 5-KPI semantic layer</td><td><span class="pill ga dot">GA</span></td></tr>
+              <tr><td><b>Genie evaluation</b></td><td>Automated quality checks</td><td><span class="pill ga dot">GA</span></td></tr>
+            </tbody>
+          </table>
+          <p class="sub mt-s">All six capabilities used are <b>GA</b> &mdash; including Unity Catalog metric views and Genie&rsquo;s built-in evaluation. <b>Public Preview</b> = broadly usable, pre-GA &middot; <b>Beta</b> = early access.</p>
+        </div>
+        <div class="col">
+          <div class="card accent"><div class="k">Ready for Phase 2 &mdash; already on the platform</div>
+            <ul class="ticks" style="gap:12px;margin-top:6px">
+              <li><b>Databricks Apps</b> &mdash; chat web app &nbsp;<span class="pill ga">GA</span></li>
+              <li><b>Vector Search</b> &mdash; document search &nbsp;<span class="pill ga">GA</span></li>
+              <li><b>AI functions</b> &mdash; read documents &nbsp;<span class="pill ga">GA</span></li>
+              <li><b>Lakebase</b> &mdash; long-term memory &nbsp;<span class="pill ga">GA</span></li>
+              <li><b>Agent Bricks</b> &mdash; agent orchestration &nbsp;<span class="pill ga">GA</span></li>
+              <li><b>Domain Pages</b> &mdash; curated data domains &nbsp;<span class="pill pupr">Public Preview</span></li>
+              <li><b>Managed MCP</b> &mdash; agent tool access &nbsp;<span class="pill pupr">Public Preview</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered · capability maturity as of Sep 2026</span><span>06</span></div>
+  </section>
+
+  <!-- 7 · SEMANTIC + KNOWLEDGE ---------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Built to understand the domain</div>
+      <h2 class="h2">Built around clinical-operations knowledge</h2>
+      <p class="lead">The accuracy comes from giving the platform real domain knowledge rather than leaving it to guess. Curated KPIs and clinical context mean a plain-language question maps to the right numbers.</p>
+      <div class="row mt">
+        <div class="col">
+          <div class="barviz">
+            <div class="barrow"><div class="bl">Study site performance<span>Site KPIs</span></div><div class="bar"><i style="width:100%"></i></div><div class="bn">201,562</div></div>
+            <div class="barrow"><div class="bl">Study recruitment perf.<span>Study KPIs</span></div><div class="bar"><i style="width:57%"></i></div><div class="bn">115,728</div></div>
+            <div class="barrow"><div class="bl">Study country performance<span>Country KPIs</span></div><div class="bar"><i style="width:43%"></i></div><div class="bn">87,077</div></div>
+            <div class="barrow"><div class="bl">Study milestones<span>Actual vs baseline</span></div><div class="bar"><i style="width:27%"></i></div><div class="bn">53,463</div></div>
+            <div class="barrow"><div class="bl">Scenario planning<span>Enrollment forecast</span></div><div class="bar"><i style="width:4%"></i></div><div class="bn">1,734</div></div>
+          </div>
+          <p class="sub mt-s"><b>5 KPI views · 459,564 rows.</b> Bars show each view's row volume. Together they are the semantic layer behind every question, dashboard and report.</p>
+        </div>
+        <div class="col grid" style="align-content:start">
+          <div class="card"><div class="k">5 knowledge documents</div><p><b>31</b> clinical abbreviations · <b>21</b> milestone definitions · process-flow timing rules · a <b>122-milestone</b> dependency map · enrollment analysis context — all built into the assistant so it understands clinical terms.</p></div>
+          <div class="card"><div class="k">The details that made it accurate</div><p>Clear calculation rules so totals are always right, the useful fields surfaced and 11 technical ones hidden, and every field labelled in plain business terms.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>06</span></div>
+  </section>
+
+  <!-- 7 · THREE CHANNELS ---------------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Three ways to get answers · one source</div>
+      <h2 class="h2">The same numbers, whether you ask, view or read</h2>
+      <div class="grid g3 mt">
+        <div class="card accent"><div class="k">A · Instant</div><h3>Ask in plain language</h3><p>Ask a question, get an answer straight from the data, then ask follow-ups. Fully flexible and can be scheduled. <b>16/16</b> test questions analysed.</p><div class="mt-s"><span class="pill done dot">Exploratory &amp; interactive</span></div></div>
+        <div class="card accent"><div class="k">B · Ongoing</div><h3>Live dashboards</h3><p>2 live dashboards — Enrollment Overview + Milestone &amp; Risk Tracking. <b>17 widgets, 5 filters</b>, auto-refresh, shareable, e-mail subscriptions.</p><div class="mt-s"><span class="pill done dot">Recurring team views</span></div></div>
+        <div class="card accent"><div class="k">C · Formal</div><h3>Written trial reports</h3><p>Pick a study → Novartis-branded report. Ranked risk list (<b>4 types × 4 severity</b>), KPI scorecards, charts, recommended actions. Print-to-PDF ready.</p><div class="mt-s"><span class="pill done dot">Regulatory &amp; CTT reporting</span></div></div>
+      </div>
+      <div class="callout mt">
+        <div class="t">Consistent by construction</div>
+        <p>All three read the same 5 KPI views — so a number changed once stays consistent across questions, dashboards and reports. The report's key queries are also part of the automated checks, keeping questions and reports in sync.</p>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>07</span></div>
+  </section>
+
+  <!-- 8 · REPORT IN ACTION -------------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Proof · a real generated report</div>
+      <h2 class="h2">A written narrative a leader can act on</h2>
+      <div class="row mt">
+        <div class="col" style="flex:1.28">
+          <figure class="shot">
+            <img src="assets/report-exec-summary.png" alt="Generated executive summary — Study CAAA617C12301, Novartis-branded">
+            <figcaption><span>Generated executive summary · Study CAAA617C12301 · Phase III · 17 Sep 2026 · print-to-PDF ready</span></figcaption>
+          </figure>
+        </div>
+        <div class="col">
+          <ul class="ticks">
+            <li><b>Auto-written narrative</b> — enrollment pace, site activation, screen-failure and risk summary in plain clinical language.</li>
+            <li><b>KPI scorecard</b> — 8 cards colour-coded to target: <b>5/1126 enrolled</b> (behind), <b>242/184 sites</b> (+58), <b>33.3%</b> screen-failure, <b>23</b> overdue milestones.</li>
+            <li><b>Severity-coded risk register</b> — 25 risks · <b>3 critical · 18 high</b>; top <em>Interim data cut-off</em> 387d overdue, <em>All CRF data in</em> 381d, with "Escalate to CTT" actions.</li>
+            <li><b>Post-SIV analysis</b> — came back <b>clean</b>: every active-site country has begun screening — the analysis works both ways.</li>
+            <li><b>Same generator, any study</b> — 10 reports across 5 studies from one parameterized notebook.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · figures from the generated CAAA617C12301 report · 17 Sep 2026</span><span>08</span></div>
+  </section>
+
+  <!-- 8b · INSIGHTS -> DECISIONS --------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Insights that drive decisions</div>
+      <h2 class="h2">What the reports surfaced, and what to do about it</h2>
+      <p class="lead">Beyond the status numbers, the narrative surfaced findings a study leader can act on — each one paired with a clear recommended action, from a single study up to the whole portfolio.</p>
+      <table class="tbl mt">
+        <thead><tr><th>What the reports surfaced</th><th>Why it matters</th><th>Recommended action</th></tr></thead>
+        <tbody>
+          <tr><td><b>Both studies below site-productivity target</b> — 1.7 and 2.2 vs ~2.5 patients per site</td><td>Enrollment slips unless site yield improves</td><td>Focus support on the highest-yield sites</td></tr>
+          <tr><td><b>4 countries convert only ~50%</b> of screened patients to enrolled</td><td>Half the screening effort is being lost</td><td>Review eligibility &amp; pre-screening locally</td></tr>
+          <tr><td><b>10 countries run below 1 patient per site</b></td><td>Site capacity is under-used and costly</td><td>Consolidate or re-activate low sites</td></tr>
+          <tr><td><b>Critical milestones overdue</b> — e.g. interim data cut-off 387d</td><td>Timeline and data-readiness risk</td><td>Escalate to CTT with named owners</td></tr>
+        </tbody>
+      </table>
+      <div class="callout gr mt-s"><div class="t">Why this matters for leadership</div><p>The narrative names the under-performing and best-practice countries directly — so the team can replicate what works and step in early, instead of reading the signal from a chart weeks later.</p></div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>09</span></div>
+  </section>
+
+  <!-- 9 · QUALITY & EVALUATION ---------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">How we judge it · quality</div>
+      <h2 class="h2">How we check quality, with 100% as the target</h2>
+      <p class="lead">We built quality checks in from the start: a set of known-good questions scores the assistant automatically, and they re-run on every change so problems show up early. We are aiming for <b>100%</b>.</p>
+      <div class="row mt">
+        <div class="col" style="flex:1.4">
+          <table class="tbl">
+            <thead><tr><th>What we check</th><th>Result</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td><b>Automated checks</b></td><td>30/34 pass today · <b>→ 100% target</b></td><td><span class="pill done">Go / no-go</span></td></tr>
+              <tr><td><b>Ties to source</b></td><td>Every answer traces to the data</td><td><span class="pill done">Go / no-go</span></td></tr>
+              <tr><td><b>No made-up numbers</b></td><td>Clear rules; totals always right</td><td><span class="pill done">Go / no-go</span></td></tr>
+              <tr><td><b>Question coverage</b></td><td>16/16 analysed</td><td><span class="pill done">Met</span></td></tr>
+              <tr><td><b>Success criteria</b></td><td>2/2 addressed</td><td><span class="pill done">Met</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          <div class="card green stat"><div class="n">→100<span class="u">%</span></div><div class="l">Quality target · scored automatically and re-run on every change</div></div>
+          <div class="callout gr sm mt-s">
+            <div class="t">What sits behind the gap to 100%</div>
+            <p><b>By design:</b> 4 very complex, multi-part questions are kept in and still show some issues — routed to the built-in <b>risk engine</b> that answers them directly and reliably. <b>Data-limited:</b> a few checks are constrained by missing source data (see next slide) — an upstream data gap, not a platform limit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>09</span></div>
+  </section>
+
+  <!-- 10 · DATA QUALITY (the honesty slide) --------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Transparency · data completeness</div>
+      <h2 class="h2">The reports are written summaries, and they include a gap analysis</h2>
+      <p class="lead">The written trial reports read as plain-language summaries. Since <b>not all the source data is in the system yet</b>, we chose to be clear about the gaps rather than work around them quietly. Each report includes a dedicated <b>gap analysis</b> that documents every limitation with its impact and a mitigation. These are <b>upstream data issues, not platform limits</b>.</p>
+      <div class="row mt">
+        <div class="col">
+          <table class="tbl">
+            <thead><tr><th>Flagged gap</th><th>Mitigation in place</th></tr></thead>
+            <tbody>
+              <tr><td>No daily enrollment curves</td><td>Point-in-time plan-vs-actual snapshot</td></tr>
+              <tr><td>Milestones study-level only</td><td>Study overdue flags applied across countries</td></tr>
+              <tr><td>HA/EC approvals pattern-matched</td><td>Derived from milestone naming; noted in report</td></tr>
+              <tr><td><code>study_name</code> 98.6% NULL</td><td>Graceful fallback to <code>study_code</code></td></tr>
+              <tr><td>Country enrollment plans sparse</td><td>Reliable study-level totals used instead</td></tr>
+            </tbody>
+          </table>
+          <p class="sub mt-s">8 limitations (D1–D8) surfaced in a dedicated "Data Sources &amp; Known Gaps" section of every report.</p>
+        </div>
+        <div class="col grid" style="align-content:start">
+          <div class="card green"><div class="k">Why it doesn't undermine the delivery</div><p>All 29 requirements are <b>100% addressable</b> and <b>0</b> are blocked by missing data. The gaps limit certain over-time questions — the platform, the definitions and the reports all work as built.</p></div>
+          <div class="card"><div class="k">The GAP analysis is a deliverable</div><p>Every gap ships with impact + mitigation inside the report — so leaders trust the numbers and know exactly what's missing. Closing the gaps is <b>upstream data enrichment, planned for Phase 2</b>.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>10</span></div>
+  </section>
+
+  <!-- 10b · REVIEW FEEDBACK LOOP --------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Working from your review</div>
+      <h2 class="h2">Review feedback, and what we changed</h2>
+      <p class="lead">In the latest review you flagged two figures that did not line up on study CABL001J12301. We traced both to the same cause, fixed them at the source, and used the investigation to add new analysis.</p>
+      <div class="flow mt">
+        <div class="step"><div class="k">You flagged</div><h4>Numbers didn't line up</h4><p>The enrollment chart showed only 1 of 11 countries, and the country narrative said 67 patients instead of the correct 406.</p></div>
+        <div class="arr">→</div>
+        <div class="step"><div class="k">Root cause</div><h4>Partial country data</h4><p>The country view <code>mv_study_country_performance</code> carries sparse data — planned values are NULL for 10 of 11 countries.</p></div>
+        <div class="arr">→</div>
+        <div class="step"><div class="k">What we did</div><h4>Study-level source of truth</h4><p>Charts and narratives now read study-level KPIs, with a transparency note wherever country sums diverge. Fixes documented Q1&ndash;Q8.</p></div>
+      </div>
+      <div class="grid g2 mt-s">
+        <div class="card green"><div class="ico gr"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><div class="k">We also added, from the same investigation</div>
+          <ul class="ticks" style="gap:9px;margin-top:6px">
+            <li><b>Site Productivity KPI</b> — patients per site vs plan (1.7 and 2.2 vs ~2.5 planned)</li>
+            <li><b>Conversion &amp; utilization columns</b> — flag 4 countries at 50% screen-to-enroll and 10 with under 1 patient/site</li>
+            <li><b>Site-utilization narrative</b> — names the under-performing and best-practice countries</li>
+          </ul>
+        </div>
+        <div class="card"><div class="k">Where the feedback stands</div>
+          <p>6 of 7 review items are complete. The one that remains is partial — it needs the <b>D1 daily enrollment curves</b> from the Data Team before trend analysis can be finished.</p>
+          <div class="mt-s"><span class="pill done dot">6/7 complete</span> &nbsp;<span class="pill p2 dot">1 partial · data-blocked</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>14</span></div>
+  </section>
+
+  <!-- 11 · AGREED -> DELIVERED ---------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Agreed → delivered</div>
+      <h2 class="h2">What we agreed, and what we delivered</h2>
+      <table class="tbl mt">
+        <thead><tr><th>What we agreed</th><th>Delivered with</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><b>One defined problem, small scope</b></td><td>One platform · 5 KPI views</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td><b>Unified data as source of truth</b></td><td>One data source · 22 tables verified</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td><b>Written report per trial</b></td><td>Report generator · risk engine</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td><b>Charts &amp; visuals inline</b></td><td>Dashboards · 2 live, 17 widgets</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td><b>Follow-up questions in context</b></td><td>Ask in plain language · with follow-ups</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td><b>Calculations done reliably</b></td><td>Built-in compute · risk engine</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td>In-session preference memory</td><td>Remembered within a session</td><td><span class="pill done dot">Delivered</span></td></tr>
+          <tr><td>Structured data + supporting documents</td><td>Structured shipped · documents assessed, platform-ready</td><td><span class="pill p2 dot">Staged</span></td></tr>
+          <tr><td>Chat web app &amp; long-term memory</td><td>On the same platform</td><td><span class="pill p2 dot">Phase 2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · Phase 1 POC scope 100% · 8 items deferred to Phase 2 · 2/2 success criteria</span><span>11</span></div>
+  </section>
+
+  <!-- 12 · PHASE 2 / HEADROOM ----------------------------------------------->
+  <section class="slide">
+    <div class="stage">
+      <div class="eyebrow">Phase 2 approach · the path to MVP</div>
+      <h2 class="h2">What Phase 2 adds</h2>
+      <p class="lead">Eight backlog items are deferred to Phase 2. <b>None are blocked and all are planned.</b> They fall into three groups, each straightforward on the setup already in place.</p>
+      <div class="grid g3 mt">
+        <div class="card accent"><div class="k">Logic-dependent</div><ul class="ticks" style="gap:8px"><li>Persona-based instruction sets</li><li>Early site-closure &amp; greenlight rules</li><li>Over-enrollment alerting thresholds</li></ul></div>
+        <div class="card accent"><div class="k">Data-dependent</div><ul class="ticks" style="gap:8px"><li>Daily enrollment data → trend questions</li><li>Contract-execution milestones</li><li>Country-level milestone dates</li></ul></div>
+        <div class="card accent"><div class="k">Build-out</div><ul class="ticks" style="gap:8px"><li>Chat web app</li><li>Long-term memory</li><li>Saved report data for re-use</li></ul></div>
+      </div>
+      <div class="callout gr mt">
+        <div class="t">Documents — assessed, and the platform is ready</div>
+        <p>All POC requirements were met with the structured data. If documents, protocols or free text come into scope later, the tools to read and search them are already on the same platform — an add-on, not a new project, and secured the same way. Days, not months.</p>
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>12</span></div>
+  </section>
+
+  <!-- 13 · CLOSING ---------------------------------------------------------->
+  <section class="slide">
+    <svg class="motif" viewBox="0 0 300 340" fill="none" aria-hidden="true" style="opacity:.5">
+      <g stroke="#d9d5cc" stroke-width="1"><path d="M150 20 L280 95 L280 245 L150 320 L20 245 L20 95 Z"/><path d="M150 20 L150 170 M150 170 L280 245 M150 170 L20 245 M20 170 L280 170"/></g>
+      <g fill="#ff4127"><circle cx="150" cy="170" r="6"/><circle cx="280" cy="95" r="5"/><circle cx="20" cy="245" r="5"/></g>
+      <g fill="#12a077"><circle cx="150" cy="20" r="5"/><circle cx="150" cy="320" r="5"/></g>
+    </svg>
+    <div class="stage">
+      <div class="eyebrow">What we proved · next steps</div>
+      <h2 class="h2">What we proved, and what comes next</h2>
+      <p class="lead">A small team turned the unified clinical-operations data into something you can ask, view and read. It is quality-checked, always tied back to the source, and clear about where the data falls short. Running it all on one platform is what made it quick to build, and it is what makes the next phase straightforward.</p>
+      <div class="grid g3 mt">
+        <div class="card accent"><div class="k">Next step 1</div><h3>Lock Phase 2 scope</h3><p>Confirm chat web app + long-term memory with CTT, and greenlight the MVP build on Apps &amp; Lakebase.</p></div>
+        <div class="card accent"><div class="k">Next step 2</div><h3>Close the data gaps</h3><p>Bring in daily enrollment, contract-execution &amp; country-level milestones with the Data Team.</p></div>
+        <div class="card accent"><div class="k">Next step 3</div><h3>Scale &amp; harden</h3><p>Extend from 5 studies to the portfolio; push quality to the <b>100%</b> target toward MVP.</p></div>
+      </div>
+      <div class="titlefoot" style="margin-top:26px;align-items:center">
+        <span>CTT Catalyst · Clinical Operations · NextGen sandbox</span>
+        <img src="assets/novartis-logo.png" alt="Novartis" style="height:26px;width:auto">
+      </div>
+    </div>
+    <div class="foot"><span class="brand"><img class="foot-logo" src="assets/databricks-logo.png" alt="Databricks"> CTT Catalyst · delivered</span><span>13</span></div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var i = 0;
+  function pad(n){return (n<10?'0':'')+n;}
+  // Auto-number each slide's footer so inserting/reordering slides never desyncs the numbers.
+  slides.forEach(function(s,idx){ var f=s.querySelector('.foot > span:last-child'); if(f) f.textContent = pad(idx+1); });
+  function show(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach(function(s,idx){ s.classList.toggle('active', idx===i); });
+    bar.style.width = ((i)/(slides.length-1)*100)+'%';
+    counter.textContent = pad(i+1)+' / '+pad(slides.length);
+    if(location.hash !== '#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); next(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ show(0); }
+    else if(e.key==='End'){ show(slides.length-1); }
+    else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else{document.exitFullscreen&&document.exitFullscreen();} }
+  });
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  var sx=null;
+  document.addEventListener('touchstart',function(e){ sx=e.touches[0].clientX; },{passive:true});
+  document.addEventListener('touchend',function(e){ if(sx===null)return; var dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>50){ dx<0?next():prev(); } sx=null; },{passive:true});
+  var start = parseInt((location.hash||'').replace('#',''),10);
+  show(isNaN(start)?0:start-1);
+})();
+</script>
+</body>
+</html>
